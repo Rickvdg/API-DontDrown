@@ -1,0 +1,48 @@
+﻿input {
+    border: 1px solid gray;
+}
+
+input:invalid {
+    border: 1px solid red;
+}
+
+#spoiler {
+    display: none;
+}
+
+table {
+    font-family: Arial, sans-serif;
+    border: 1px solid;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #0066CC;
+    color: white;
+    padding: 0 5px;
+}
+
+td {
+    padding: 5px;
+}
+
+th, td {
+    border: 1px solid black;
+}
+
+.form-div {
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: lightblue;
+    line-height: 1.5em;
+}
+
+#newTable, #newTable td {
+    border: 0;
+    vertical-align: text-top;
+}
+
+input:invalid {
+    border: 1px solid red;
+}
