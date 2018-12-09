@@ -15,6 +15,7 @@ function getCount(data) {
 
 $(document).ready(function () {
     getData();
+    getClass();
 });
 
 function getData() {
@@ -63,6 +64,29 @@ function getData() {
             });
 
             vragen = data;
+        }
+    });
+}
+
+var loggedUser = { username = "Rick", klas = "H5P", rolId = 1 };
+function getClass() {
+    $.ajax({
+        type: "GET",
+        url: "api/account",
+        cache: false,
+        success: function (data) {
+            const tBody = $("#gebruikers");
+            $(tBody).empty();
+            console.log(data);
+
+            $.each(data, function (key, item) {
+                const tr = $("<tr></tr>")
+                    .append($("<td></td>").text(item.id))
+                    .append($("<td></td>").text(item.username))
+                    .append($("<td></td>").text(item.rol));
+
+                tr.appendTo(tBody);
+            });
         }
     });
 }

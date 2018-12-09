@@ -15,4 +15,4 @@
 --INSERT INTO Accounts (username, password, rol_id, save_id)
 --VALUES ('Rick', '123', 1, 1);
 
-SELECT * FROM Accounts;
+SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id ORDER BY a.rol_id;

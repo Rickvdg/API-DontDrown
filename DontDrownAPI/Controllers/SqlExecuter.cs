@@ -139,6 +139,63 @@ namespace DontDrownAPI.Controllers
             return returnValue;
         }
 
+        public static List<Account> GetAccounts(SqlConnection connection, string classname)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+
+            if (!String.IsNullOrEmpty(classname))
+            {
+                cmd.CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id AND klas = {classname} ORDER BY a.rol_id";
+            }
+            else
+            {
+                cmd.CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id ORDER BY a.rol_id";
+            }
+
+            var returnList = new List<Account>();
+
+            using (connection)
+            {
+                connection.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var account = new Account()
+                        {
+                            Id = reader.GetInt32(0),
+                            Username = reader.GetString(1),
+                            RolId = reader.GetInt32(2),
+                            Rol = reader.GetString(3),
+                            SaveId = reader.GetInt32(4),
+                            SaveJson = reader.GetString(5),
+                            Classname = reader.SafeGetString(6)
+                        };
+                        returnList.Add(account);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No accounts");
+                }
+                reader.Close();
+            }
+            return returnList;
+        }
+
+        private static string SafeGetString(this SqlDataReader reader, int colIndex)
+        {
+            if (!reader.IsDBNull(colIndex))
+                return reader.GetString(colIndex);
+            return string.Empty;
+        }
+
         /*  
         *    ===================
         *    All INSERT querries
