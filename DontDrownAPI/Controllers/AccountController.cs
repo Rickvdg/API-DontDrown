@@ -12,7 +12,7 @@ namespace DontDrownAPI.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private SqlConnection sqlCon = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DontDrown;Integrated Security=True;MultipleActiveResultSets=True");
+        private SqlConnection sqlCon = new SqlConnection(StaticValues.sqlConString);
 
         [HttpGet]
         public ActionResult<List<Account>> GetAll()

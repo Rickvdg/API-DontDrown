@@ -1,106 +1,90 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Vragenlijst CRUD</title>
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <meta charset="utf-8" />
+    <title>Log in</title>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <style>
+        body {
+            font-family: 'Open Sans';
+        }
+        .login-window {
+            background-color: lightblue;
+            border-radius: 7px;
+            border: 1px solid black;
+            max-width: 20em;
+            padding: 15px;
+            display: inline-block;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+        }
+        h1 {
+            margin-top: 0;
+        }
+        button {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h1>Vragenlijst CRUD</h1>
-    <h3>Add</h3>
-    <form action="javascript:void(0);" method="POST" onsubmit="addItem()" style="display: inline-block">
-        <div class="form-div">
-            <table id="newTable">
-                <tr>
-                    <td>Vraag</td>
-                    <td><input type="text" id="add-name" required></td>
-                </tr>
-                <tr>
-                    <td>Type</td>
-                    <td>
-                        <select id="add-type">
-                            <option value="1">Meerkeuze</option>
-                            <option value="2">Open, getal</option>
-                            <option value="3">Open, woord</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Hint</td>
-                    <td><input type="text" id="add-hint"></td>
-                </tr>
-                <tr>
-                    <td>Antwoorden</td>
-                    <td>
-                        <input type="text" id="antwoord1" style="background-color: lightgreen" required><br />
-                        <input type="text" id="antwoord2" style="background-color: lightcoral" required><br />
-                        <input type="text" id="antwoord3" style="background-color: lightcoral" required><br />
-                        <input type="text" id="antwoord4" style="background-color: lightcoral" required><br />
-                        <input type="text" id="antwoord5" style="background-color: lightcoral" required><br />
-                        <input type="text" id="antwoord6" style="background-color: lightcoral" required>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Minimale level</td>
-                    <td><input type="number" id="add-minlevel" min="1"></td>
-                </tr>
-                <tr>
-                    <td>Maximale level</td>
-                    <td><input type="number" id="add-maxlevel" max="10"></td>
-                </tr>
+    <div class="login-window">
+        <h1>Log in as admin</h1>
+        <form>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            Username:
+                        </td>
+                        <td><input id="username" type="text" /></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Password:
+                        </td>
+                        <td>
+                            <input id="password" type="password" />
+                        </td>
+                    </tr>
+                </tbody>
             </table>
-            <input type="submit" value="Add">
-        </div>
-    </form>
-
-    <div id="spoiler">
-        <h3>Edit</h3>
-        <form class="my-form">
-            <input type="hidden" id="edit-id">
-            <input type="checkbox" id="edit-isComplete">
-            <input type="text" id="edit-name">
-            <input type="submit" value="Edit">
-            <a onclick="closeInput()" aria-label="Close">&#10006;</a>
+            <button onclick="login()" type="button">Log in</button>
         </form>
     </div>
-
-    <table>
-        <tr>
-            <th>Id</th>
-            <th>Naam</th>
-            <th>Rol</th>
-            <th></th>
-        </tr>
-        <tbody id="gebruikers"></tbody>
-    </table>
-
-    <p id="counter"></p>
-
-    <table style="display: inline; border: 0;">
-        <tr>
-            <th>Active</th>
-            <th>Id</th>
-            <th>Vraag</th>
-            <th>Type</th>
-            <th>Hint</th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tbody id="vragen"></tbody>
-    </table>
-
-    <table style="display: inline; border: 0;">
-        <tr>
-            <th>Index</th>
-            <th>Antwoord</th>
-            <th>Correctheid</th>
-        </tr>
-        <tbody id="antwoorden"></tbody>
-    </table>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
-    <script src="site.js"></script>
+    <script>
+        function login() {
+            console.log("Login attempt")
+            $.ajax({
+                type: "GET",
+                accepts: "application/json",
+                url: "/api/auth/login",
+                contentType: "application/json",
+                data: {
+                    username: $("#username").val(),
+                    password: $("#password").val()
+                },
+                error: function () {
+                    alert("Kon niet inloggen");
+                },
+                success: function (result) {
+                    if (result != -1) {
+                        window.location.href = "/questionAdmin.html"
+                    } else {
+                        alert("Invalid details");
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>

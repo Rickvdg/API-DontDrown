@@ -17,7 +17,7 @@ namespace DontDrownAPI
     public class VraagController : ControllerBase
     {
         private readonly VraagContext _context;
-        private SqlConnection sqlCon = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DontDrown;Integrated Security=True;MultipleActiveResultSets=True");
+        private SqlConnection sqlCon = new SqlConnection(StaticValues.sqlConString);
 
         public VraagController(VraagContext context)
         {
@@ -43,6 +43,12 @@ namespace DontDrownAPI
         public ActionResult<VraagItem> GetById(long id)
         {
             return SqlExecuter.GetQuestionAdmin(sqlCon, id);
+        }
+
+        [HttpGet("levelup/{id}", Name = "GetLevelUp")]
+        public ActionResult<bool> GetLevelUp(long id)
+        {
+            return SqlExecuter.GetLevelUp(sqlCon, id);
         }
 
         [HttpPost]

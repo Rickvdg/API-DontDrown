@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 using DontDrownAPI.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +48,7 @@ namespace DontDrownAPI
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseMvc();
+            
         }
     }
 }

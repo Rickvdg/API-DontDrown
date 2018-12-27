@@ -15,4 +15,10 @@
 --INSERT INTO Accounts (username, password, rol_id, save_id)
 --VALUES ('Rick', '123', 1, 1);
 
-SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id ORDER BY a.rol_id;
+--SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id ORDER BY a.rol_id;
+
+--SELECT * FROM Accounts WHERE username = 'Rick' AND password = '123';
+
+--SELECT * FROM Saves;
+--UPDATE Saves SET data = '{ Level: 1, LevelUp: true }' WHERE id = 1;
+SELECT data FROM Saves WHERE id = 1;

@@ -1,9 +1,15 @@
 ﻿input {
     border: 1px solid gray;
+    padding: 3px 7px;
+    border-radius: 5px;
 }
 
 input:invalid {
     border: 1px solid red;
+}
+
+.btn {
+    line-height: 1;
 }
 
 #spoiler {

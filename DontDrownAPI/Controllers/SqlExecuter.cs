@@ -1,7 +1,9 @@
 ﻿using DontDrownAPI.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -115,7 +117,7 @@ namespace DontDrownAPI.Controllers
         {
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"SELECT username FROM Accounts WHERE username = {username} AND password = {password}",
+                CommandText = $"SELECT username FROM Accounts WHERE username = '{username}' AND password = '{password}'",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
@@ -124,17 +126,25 @@ namespace DontDrownAPI.Controllers
             using (connection)
             {
                 connection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.HasRows)
+                try
                 {
-                    returnValue = true;
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        returnValue = true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Failed login attempt");
+                    }
+                    reader.Close();
                 }
-                else
+                catch
                 {
-                    Console.WriteLine("Failed login attempt");
+                    Debug.WriteLine("Login failed with an error");
                 }
-                reader.Close();
             }
             return returnValue;
         }
@@ -187,6 +197,45 @@ namespace DontDrownAPI.Controllers
                 reader.Close();
             }
             return returnList;
+        }
+
+        public static bool GetLevelUp(SqlConnection connection, long userID)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"SELECT data FROM Saves WHERE id = {userID}",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+            bool returnValue = false;
+
+            using (connection)
+            {
+                connection.Open();
+
+                try
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        JObject json = JObject.Parse(reader.GetString(0));
+
+                        returnValue = (bool)json["LevelUp"];
+                    }
+                    else
+                    {
+                        Debug.WriteLine("UserID not found");
+                    }
+                    reader.Close();
+                }
+                catch
+                {
+                    Debug.WriteLine("Finding levelup failed with an error");
+                }
+            }
+            return returnValue;
         }
 
         private static string SafeGetString(this SqlDataReader reader, int colIndex)

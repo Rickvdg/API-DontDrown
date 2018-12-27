@@ -47,14 +47,14 @@ function getData() {
                     .append($("<td></td>").text(item.hint))
                     .append(
                         $("<td></td>").append(
-                            $("<button>Antwoorden</button>").on("click", function () {
+                            $("<button class='btn btn-primary'>Antwoorden</button>").on("click", function () {
                                 showAntwoorden(item.id);
                             })
                         )
                     )
                     .append(
                         $("<td></td>").append(
-                            $("<button>Delete</button>").on("click", function () {
+                            $("<button class='btn btn-primary'>Delete</button>").on("click", function () {
                                 deleteItem(item.id);
                             })
                         )
@@ -64,11 +64,15 @@ function getData() {
             });
 
             vragen = data;
+        },
+        error: function (er) {
+            console.log(er);
         }
     });
 }
 
-var loggedUser = { username = "Rick", klas = "H5P", rolId = 1 };
+var loggedUser = { username: "Rick", klas: "H5P", rolId: 1 };
+
 function getClass() {
     $.ajax({
         type: "GET",
@@ -83,7 +87,8 @@ function getClass() {
                 const tr = $("<tr></tr>")
                     .append($("<td></td>").text(item.id))
                     .append($("<td></td>").text(item.username))
-                    .append($("<td></td>").text(item.rol));
+                    .append($("<td></td>").text(item.rol))
+                    .append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
 
                 tr.appendTo(tBody);
             });
