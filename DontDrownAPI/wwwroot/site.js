@@ -81,14 +81,23 @@ function getClass() {
         success: function (data) {
             const tBody = $("#gebruikers");
             $(tBody).empty();
-            console.log(data);
+            //console.log(data);
 
             $.each(data, function (key, item) {
+                var jsonData = {};
+                if (item.saveJson) {
+                    jsonData = JSON.parse(item.saveJson);
+                }
                 const tr = $("<tr></tr>")
                     .append($("<td></td>").text(item.id))
                     .append($("<td></td>").text(item.username))
                     .append($("<td></td>").text(item.rol))
-                    .append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
+
+                if (jsonData.LevelUp) {
+                    tr.append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
+                } else {
+                    tr.append($("<td></td>"));
+                }
 
                 tr.appendTo(tBody);
             });

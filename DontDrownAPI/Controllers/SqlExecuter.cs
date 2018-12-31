@@ -271,11 +271,65 @@ namespace DontDrownAPI.Controllers
             }
         }
 
+        /*
+         *  ===================
+         *  All UPDATE querries
+         *  ===================
+         */
+        public static bool UpdateLevelUp(SqlConnection connection, long userid, bool canLevelUp)
+        {
+            Debug.WriteLine($"userid: {userid}, canLevelUp: {canLevelUp}");
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(data, '$.LevelUp', '{canLevelUp.ToString().ToLower()}') WHERE id = {userid};",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+
+            using (connection)
+            {
+                connection.Open();
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public static bool UpdateLevelUpPlayer(SqlConnection connection, long userid)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', 'false'), '$.Level',JSON_VALUE(data, '$.Level') + 1) WHERE id = {userid};",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+
+            using (connection)
+            {
+                connection.Open();
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public static bool UpdateSaveData(SqlConnection connection, long userid, string jsonData)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"UPDATE Saves SET data = '{jsonData}' WHERE id = {userid} AND ISJSON('{jsonData}') > 0;",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+
+            using (connection)
+            {
+                connection.Open();
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
 
         /*  
-        *    ===================
-        *    All DELETE querries
-        *    ===================
+        *   ===================
+        *   All DELETE querries
+        *   ===================
         */
         public static bool DeleteQuestion(SqlConnection connection, long id)
         {

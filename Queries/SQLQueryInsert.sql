@@ -19,6 +19,10 @@
 
 --SELECT * FROM Accounts WHERE username = 'Rick' AND password = '123';
 
---SELECT * FROM Saves;
---UPDATE Saves SET data = '{ Level: 1, LevelUp: true }' WHERE id = 1;
-SELECT data FROM Saves WHERE id = 1;
+--UPDATE Saves SET data = '{ "Level": 1, "LevelUp": true }' WHERE id = 1;
+--SELECT data FROM Saves WHERE id = 1;
+
+--UPDATE Saves SET data = JSON_MODIFY(data, '$.LevelUp', 'true') WHERE id = 1;
+--UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', 'false'), '$.Level',JSON_VALUE(data, '$.Level') + 1) WHERE id = 1;
+UPDATE Saves SET data = '{ "Level": 2, "LevelUp": "false" }' WHERE id = 1 AND ISJSON('{ "Level": 2, "LevelUp": "false" }') > 0;
+SELECT data FROM saves WHERE id = 1 AND ISJSON(data) > 0;
