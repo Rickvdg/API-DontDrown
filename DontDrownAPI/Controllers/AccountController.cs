@@ -69,13 +69,11 @@ namespace DontDrownAPI.Controllers
             }
         }
 
-        [HttpPut("save/{id}")]
-        public IActionResult UpdateSave(long id, [FromBody]string data)
+        [HttpPut("save")]
+        public IActionResult UpdateSave(string data)
         {
-            //try
-            //{
             Debug.WriteLine(data);
-            bool result = SqlExecuter.UpdateSaveData(sqlCon, id, data);
+            bool result = SqlExecuter.UpdateSaveData(sqlCon, 1, data);
             if (result)
             {
                 return Ok();
@@ -84,11 +82,6 @@ namespace DontDrownAPI.Controllers
             {
                 return NotFound();
             }
-            //}
-            //catch
-            //{
-            //    return NotFound();
-            //}
         }
     }
 }

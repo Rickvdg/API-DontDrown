@@ -14,7 +14,7 @@ namespace DontDrownAPI.Controllers
     {
         private SqlConnection sqlCon = new SqlConnection(StaticValues.sqlConString);
 
-        [Route("login")]
+        [HttpGet("login")]
         public int Login(string username, string password)
         {
             bool correctLogin = SqlExecuter.Login(sqlCon, username, password);
@@ -37,6 +37,7 @@ namespace DontDrownAPI.Controllers
             return -1;
         }
 
+        [HttpGet("logout")]
         public bool Logout(string username)
         {
             StaticValues.userCookies.Remove(username);

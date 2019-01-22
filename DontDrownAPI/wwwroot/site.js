@@ -110,6 +110,32 @@ function addItem() {
         Vraag: $("#add-name").val(),
         Type: $("#add-type").val(),
         Hint: $("#add-hint").val(),
+        Antwoorden: [
+            {
+                Waarde: $("#antwoord1").val(),
+                Correctness: 1
+            },
+            {
+                Waarde: $("#antwoord2").val(),
+                Correctness: 2
+            },
+            {
+                Waarde: $("#antwoord3").val(),
+                Correctness: 3
+            },
+            {
+                Waarde: $("#antwoord4").val(),
+                Correctness: 4
+            },
+            {
+                Waarde: $("#antwoord5").val(),
+                Correctness: 5
+            },
+            {
+                Waarde: $("#antwoord6").val(),
+                Correctness: 6
+            }
+        ],
         MinLevel: $("#add-minlevel").val(),
         MaxLevel: $("#add-maxlevel").val()
     };
@@ -126,10 +152,13 @@ function addItem() {
         success: function (result) {
             getData();
             $("#add-name").val("");
-            $("#add-type").val(0);
             $("#add-hint").val("");
-            $("#add-minlevel").val("");
-            $("#add-maxlevel").val("");
+            $("#antwoord1").val("");
+            $("#antwoord2").val("");
+            $("#antwoord3").val("");
+            $("#antwoord4").val("");
+            $("#antwoord5").val("");
+            $("#antwoord6").val("");
         }
     });
 }

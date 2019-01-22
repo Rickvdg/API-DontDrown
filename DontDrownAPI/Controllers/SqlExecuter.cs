@@ -38,8 +38,12 @@ namespace DontDrownAPI.Controllers
             {
                 return GetQuestions(
                     connection,
-                    $"SELECT id,type_id,vraag,hint,minlevel,maxlevel FROM Vragen WHERE id={id} AND active=true"
+                    $"SELECT * FROM testtable"
                 ).First();
+                //return GetQuestions(
+                //    connection,
+                //    $"SELECT id,type_id,vraag,hint,minlevel,maxlevel FROM Vragen WHERE id={id} AND active=true"
+                //).First();
             }
             catch
             {
@@ -238,6 +242,80 @@ namespace DontDrownAPI.Controllers
             return returnValue;
         }
 
+        public static string GetSaveData(SqlConnection connection, int userId)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"SELECT data FROM Saves WHERE id = {userId}",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+            string returnValue = String.Empty;
+
+            using (connection)
+            {
+                connection.Open();
+
+                try
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        returnValue = reader.GetString(0);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("UserID not found");
+                    }
+                    reader.Close();
+                }
+                catch
+                {
+                    Debug.WriteLine("Data not found");
+                }
+            }
+            return returnValue;
+        }
+
+        public static string GetSaveData(SqlConnection connection, string username)
+        {
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"SELECT data FROM Saves, Accounts WHERE username = {username} AND accounts.id = saves.id",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+            string returnValue = String.Empty;
+
+            using (connection)
+            {
+                connection.Open();
+
+                try
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        reader.Read();
+                        returnValue = reader.GetString(0);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("UserID not found");
+                    }
+                    reader.Close();
+                }
+                catch
+                {
+                    Debug.WriteLine("Data not found");
+                }
+            }
+            return returnValue;
+        }
+
         private static string SafeGetString(this SqlDataReader reader, int colIndex)
         {
             if (!reader.IsDBNull(colIndex))
@@ -254,10 +332,22 @@ namespace DontDrownAPI.Controllers
         {
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"INSERT INTO Vragen (type_id, vraag, hint, minlevel, maxlevel) VALUES(@param1,@param2,@param3,@param4,@param5)",
+                //CommandText = $"INSERT INTO Vragen (type_id, vraag, hint, minlevel, maxlevel) VALUES(@param1,@param2,@param3,@param4,@param5)",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
+            cmd.CommandText = $"BEGIN TRANSACTION" +
+                $" DECLARE @DataID int;" +
+                $" INSERT INTO Vragen(type_id, vraag, hint, minlevel, maxlevel)" +
+                $" VALUES(@param1, @param2, @param3, @param4, @param5);" +
+                $" SELECT @DataID = scope_identity();";
+            foreach (var antwoord in vraagItem.Antwoorden)
+            {
+                cmd.CommandText += $" INSERT INTO Antwoorden(vraag_id, text, correctness)" +
+                $" VALUES(@DataID, '{antwoord.Waarde}', {antwoord.Correctness});";
+            }
+            cmd.CommandText += $" COMMIT";
+
             cmd.Parameters.Add("@param1", System.Data.SqlDbType.Int).Value = vraagItem.Type;
             cmd.Parameters.Add("@param2", System.Data.SqlDbType.VarChar, 255).Value = vraagItem.Vraag;
             cmd.Parameters.Add("@param3", System.Data.SqlDbType.VarChar, 400).Value = vraagItem.Hint;
