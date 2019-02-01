@@ -36,7 +36,12 @@ namespace DontDrownAPI
         [HttpGet(Name = "GetVragen")]
         public ActionResult<List<VraagItem>> GetAll()
         {
-            return SqlExecuter.GetQuestionsAdmin(sqlCon);
+            var vragen = new List<VraagItem>();
+            vragen.Add(new VraagItem() { Id = 1, Active = true, Vraag = "Vraag 1", Antwoorden = null, MinLevel = 1, MaxLevel = 10, Type = VraagItem.VraagType.Meerkeuze });
+            vragen.Add(new VraagItem() { Id = 1, Active = true, Vraag = "Vraag 2", Antwoorden = null, MinLevel = 1, MaxLevel = 10, Type = VraagItem.VraagType.Meerkeuze });
+
+            return vragen;
+            //return SqlExecuter.GetQuestionsAdmin(sqlCon);
         }
 
         [HttpGet("{id}", Name = "GetVraag")]
