@@ -29,5 +29,6 @@
 
 --SELECT data FROM Saves, Accounts WHERE username = 'rick' AND accounts.id = saves.id;
 
---SELECT id,type_id,vraag,hint,minlevel,maxlevel FROM Vragen WHERE id=2 AND active=true;
-Select * from Vragen;
+SELECT data FROM Saves, Accounts WHERE Saves.id = Accounts.save_id AND Accounts.id = 1;
+
+--SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, a.klas FROM Accounts a, Rollen r WHERE a.rol_id = r.id AND LOWER(a.username) = 'rick' AND a.password = '123'

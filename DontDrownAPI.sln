@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DontDrownAPI", "DontDrownAPI\DontDrownAPI.csproj", "{44DA5B61-A315-489D-8551-1AC907805E74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dontdrown-ef", "dontdrown-ef\dontdrown-ef.csproj", "{3A25804F-E4B5-4C9B-9F51-86D912CECAB3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dontdrown", "dontdrown\dontdrown.csproj", "{62F7B689-11E3-4CE0-9928-8543231D6B16}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{44DA5B61-A315-489D-8551-1AC907805E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44DA5B61-A315-489D-8551-1AC907805E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44DA5B61-A315-489D-8551-1AC907805E74}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A25804F-E4B5-4C9B-9F51-86D912CECAB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A25804F-E4B5-4C9B-9F51-86D912CECAB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A25804F-E4B5-4C9B-9F51-86D912CECAB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A25804F-E4B5-4C9B-9F51-86D912CECAB3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62F7B689-11E3-4CE0-9928-8543231D6B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62F7B689-11E3-4CE0-9928-8543231D6B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62F7B689-11E3-4CE0-9928-8543231D6B16}.Release|Any CPU.ActiveCfg = Release|Any CPU

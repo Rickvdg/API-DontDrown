@@ -1,4 +1,5 @@
 ﻿using DontDrownAPI.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -117,16 +118,15 @@ namespace dontdrown.Controllers
             return items;
         }
 
-        public static bool Login(string username, string password)
+        public static Account Login(string username, string password)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"SELECT username FROM Accounts WHERE username = '{username.ToLower()}' AND password = '{password}'",
+                CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, a.klas FROM Accounts a, Rollen r WHERE a.rol_id = r.id AND LOWER(a.username) = '{username.ToLower()}' AND a.password = '{password}'",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
-            bool returnValue = false;
 
             using (connection)
             {
@@ -138,7 +138,18 @@ namespace dontdrown.Controllers
 
                     if (reader.HasRows)
                     {
-                        returnValue = true;
+                        while (reader.Read())
+                        {
+                            return new Account()
+                            {
+                                Id = reader.GetInt32(0),
+                                Username = reader.GetString(1),
+                                RolId = reader.GetInt32(2),
+                                Rol = reader.GetString(3),
+                                SaveId = reader.GetInt32(4),
+                                Classname = reader.SafeGetString(5)
+                            };
+                        }
                     }
                     else
                     {
@@ -151,12 +162,12 @@ namespace dontdrown.Controllers
                     Debug.WriteLine("Login failed with an error");
                 }
             }
-            return returnValue;
+            return null;
         }
 
         public static List<Account> GetAccounts(string classname)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
                 CommandType = System.Data.CommandType.Text,
@@ -207,7 +218,7 @@ namespace dontdrown.Controllers
 
         public static bool GetLevelUp(long userID)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
                 CommandText = $"SELECT data FROM Saves WHERE id = {userID}",
@@ -247,10 +258,10 @@ namespace dontdrown.Controllers
 
         public static string GetSaveData(int userId)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"SELECT data FROM Saves WHERE id = {userId}",
+                CommandText = $"SELECT data FROM Saves, Accounts WHERE Saves.id = Accounts.save_id AND Accounts.id = {userId}",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
@@ -285,10 +296,10 @@ namespace dontdrown.Controllers
 
         public static string GetSaveData(string username)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"SELECT data FROM Saves, Accounts WHERE username = {username} AND accounts.id = saves.id",
+                CommandText = $"SELECT data FROM Saves, Accounts WHERE Saves.id = Accounts.save_id AND LOWER(Accounts.username) = '{username.ToLower()}'",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
@@ -335,7 +346,7 @@ namespace dontdrown.Controllers
         */
         public static bool InsertQuestion(VraagItem vraagItem)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["mssqlserver"].ConnectionString);
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
             SqlCommand cmd = new SqlCommand
             {
                 //CommandText = $"INSERT INTO Vragen (type_id, vraag, hint, minlevel, maxlevel) VALUES(@param1,@param2,@param3,@param4,@param5)",
@@ -372,9 +383,10 @@ namespace dontdrown.Controllers
          *  All UPDATE querries
          *  ===================
          */
-        public static bool UpdateLevelUp(SqlConnection connection, long userid, bool canLevelUp)
+        public static bool UpdateLevelUp(long userid, bool canLevelUp)
         {
-            Debug.WriteLine($"userid: {userid}, canLevelUp: {canLevelUp}");
+            string conString = ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString;
+            SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
                 CommandText = $"UPDATE Saves SET data = JSON_MODIFY(data, '$.LevelUp', '{canLevelUp.ToString().ToLower()}') WHERE id = {userid};",
@@ -405,8 +417,10 @@ namespace dontdrown.Controllers
             }
         }
 
-        public static bool UpdateSaveData(SqlConnection connection, long userid, string jsonData)
+        public static bool UpdateSaveData(long userid, string jsonData)
         {
+            string conString = ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString;
+            SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
                 CommandText = $"UPDATE Saves SET data = '{jsonData}' WHERE id = {userid} AND ISJSON('{jsonData}') > 0;",
@@ -421,14 +435,15 @@ namespace dontdrown.Controllers
             }
         }
 
-
         /*  
         *   ===================
         *   All DELETE querries
         *   ===================
         */
-        public static bool DeleteQuestion(SqlConnection connection, long id)
+        public static bool DeleteQuestion(long id)
         {
+            string conString = ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString;
+            SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
                 CommandText = $"DELETE FROM Vragen WHERE id={id}",

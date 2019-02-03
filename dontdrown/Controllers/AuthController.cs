@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DontDrownAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -16,29 +17,22 @@ namespace dontdrown.Controllers
             return new string[] { "value1", "value2" };
         }
         
-        // GET api/<controller>/5
-        public int Get(int id)
+        // GET api/<controller>/{username}/{password}
+        [Route("api/auth/login/{username}/{password}")]
+        public IHttpActionResult Get(string username, string password)
         {
-            string username = "Rick";
-            string password = "123";
-            bool correctLogin = SqlExecuter.Login(username, password);
-            Debug.WriteLine(StaticValues.userCookies.Count);
+            Account user = SqlExecuter.Login(username, password);
 
-            if (correctLogin)
+            if (user != null)
             {
                 if (!StaticValues.userCookies.ContainsKey(username))
                 {
                     int authCookie = new Random().Next(10000, 99999);
                     StaticValues.userCookies.Add(username, authCookie);
-
-                    return authCookie;
                 }
-                else
-                {
-                    return StaticValues.userCookies[username];
-                }
+                return Ok(user);
             }
-            return -1;
+            return NotFound();
         }
 
         // POST api/<controller>
