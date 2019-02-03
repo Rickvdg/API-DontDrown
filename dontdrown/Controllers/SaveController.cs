@@ -41,7 +41,7 @@ namespace dontdrown.Controllers
         }
 
         [Route("api/save/upgrade/{id}")]
-        [HttpPost]
+        [HttpPut]
         public bool PostUpgradePlayer(int id)
         {
             return SqlExecuter.UpdateLevelUp(id);

@@ -23,6 +23,16 @@ namespace DontDrownAPI.Controllers
         {
             return SqlExecuter.GetAccounts(classname);
         }
+
+        public IHttpActionResult Post([FromBody] Account account)
+        {
+            var value = SqlExecuter.InsertAccount(account.Username, account.Password, account.RolId, account.Classname);
+            if (value)
+            {
+                return Ok();
+            }
+            return NotFound();
+        } 
         
         [Route("api/account/{id}")]
         [HttpPut]

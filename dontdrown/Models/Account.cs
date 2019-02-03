@@ -9,6 +9,7 @@ namespace DontDrownAPI.Models
     {
         public long Id { get; set; }
         public string Username { get; set; }
+        public string Password { get; set; }
         public long RolId { get; set; }
         public string Rol { get; set; }
         public long SaveId { get; set; }

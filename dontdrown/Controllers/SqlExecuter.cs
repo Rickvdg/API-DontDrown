@@ -223,7 +223,7 @@ namespace dontdrown.Controllers
 
             if (!String.IsNullOrEmpty(classname))
             {
-                cmd.CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id AND klas = {classname} ORDER BY a.rol_id";
+                cmd.CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id AND klas = '{classname}' ORDER BY a.rol_id";
             }
             else
             {
@@ -425,6 +425,28 @@ namespace dontdrown.Controllers
             }
         }
 
+        public static bool InsertAccount(string username, string password, long rol_id, string klas)
+        {
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+            cmd.CommandText = "BEGIN TRANSACTION " +
+                "DECLARE @DataID int; " +
+                "INSERT INTO Saves(data) VALUES(DEFAULT); " +
+                "SELECT @DataID = scope_identity(); " +
+                $"INSERT INTO Accounts(username, password, rol_id, klas, save_id) VALUES('{username}', '{password}', {rol_id}, '{klas}', @DataID); " +
+                "COMMIT";
+
+            using (connection)
+            {
+                connection.Open();
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
         /*
          *  ===================
          *  All UPDATE querries
@@ -436,7 +458,7 @@ namespace dontdrown.Controllers
             SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(1 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = {userid};",
+                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(1 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = {userid} AND JSON_VALUE(data, '$.Request') = CAST(1 as BIT);",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };

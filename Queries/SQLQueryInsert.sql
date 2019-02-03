@@ -10,6 +10,13 @@
 --   INSERT INTO Antwoorden (vraag_id, text, correctness) VALUES (@DataID, 'Zeer lang', 2);
 --COMMIT
 
+BEGIN TRANSACTION
+   DECLARE @DataID int;
+   INSERT INTO Saves (data) VALUES (DEFAULT);
+   SELECT @DataID = scope_identity();
+   INSERT INTO Accounts (username, password, rol_id, klas, save_id) VALUES ('Henk', '123', 2, '1', @DataID);
+COMMIT
+
 --SELECT * FROM Vragen, Antwoorden WHERE Vragen.id = Antwoorden.vraag_id ORDER BY Vragen.id, Antwoorden.correctness;
 
 --INSERT INTO Accounts (username, password, rol_id, save_id)
@@ -33,11 +40,13 @@
 
 --UPDATE Saves SET data = '{ "Level": 1, "LevelUp": "true", "Request": "true" }' WHERE id = 1
 
-UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(0 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = 2;
+--UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(0 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = 2;
 
 --UPDATE Saves 
---SET data = '{ "Level": 5, "LevelUp": false, "Request": false }'
---WHERE id = (SELECT a.save_id FROM Accounts a, Saves s WHERE s.id = a.save_id AND a.id = 3)
---AND ISJSON('{ "Level": 5, "LevelUp": false, "Request": false }') > 0;
+--SET data = '{ "Level": 1, "LevelUp": false, "Request": true, "Inventory": {} }'
+--WHERE id = (SELECT a.save_id FROM Accounts a, Saves s WHERE s.id = a.save_id AND a.id = 1)
+--AND ISJSON('{ "Level": 1, "LevelUp": false, "Request": false, "Inventory": {} }') > 0;
 
-SELECT a.id, data FROM saves s, Accounts a WHERE a.save_id = s.id ;
+SELECT a.id, data FROM saves s, Accounts a WHERE a.save_id = s.id AND JSON_VALUE(data, '$.Request') = CAST(1 as BIT);
+
+--SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, s.data, a.klas FROM Accounts a, Rollen r, Saves s WHERE a.rol_id = r.id AND a.save_id = s.id AND klas = 'H5P' ORDER BY a.rol_id

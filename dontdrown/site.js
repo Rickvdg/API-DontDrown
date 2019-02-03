@@ -1,5 +1,7 @@
 ﻿const uri = "api/vraag";
 let vragen = null;
+let user = null;
+
 function getCount(data) {
     const el = $("#counter");
     let name = "Vraag";
@@ -14,6 +16,12 @@ function getCount(data) {
 }
 
 $(document).ready(function () {
+    try {
+        user = JSON.parse($.cookie('user'));
+    } catch {
+        $('body').html('<h1>Geen gebruiker is ingelogd. Ga <a href="index.html">hier</a> terug naar het inlogscherm.</h1>');
+    }
+
     getData();
     getClass();
 });
@@ -72,30 +80,29 @@ function getData() {
     });
 }
 
-var loggedUser = { username: "Rick", klas: "H5P", rolId: 1 };
-
 function getClass() {
     $.ajax({
         type: "GET",
-        url: "api/account",
+        url: "api/account/" + user.Classname,
         cache: false,
         success: function (data) {
             const tBody = $("#gebruikers");
             $(tBody).empty();
-            console.log(data);
+            $('#Classname').text(user.Classname);
 
             $.each(data, function (key, item) {
                 var jsonData = {};
-                if (item.saveJson) {
-                    jsonData = JSON.parse(item.saveJson);
+                if (item.SaveJson) {
+                    jsonData = JSON.parse(item.SaveJson);
+                    console.log(jsonData)
                 }
                 const tr = $("<tr></tr>")
                     .append($("<td></td>").text(item.Id))
                     .append($("<td></td>").text(item.Username))
                     .append($("<td></td>").text(item.Rol))
 
-                if (jsonData.LevelUp) {
-                    tr.append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
+                if (jsonData.Request) {
+                    tr.append($("<td></td>").html("<button class='btn btn-primary' onclick='LevelUpUser(" + item.Id + ")'>Level up</button>"));
                 } else {
                     tr.append($("<td></td>"));
                 }
@@ -104,6 +111,42 @@ function getClass() {
             });
         }
     });
+}
+
+function LevelUpUser(id) {
+    $.ajax({
+        url: "api/save/upgrade/" + id,
+        type: 'PUT',
+        success: function () {
+            getClass();
+        },
+        error: function () {
+            alert("De speler kon door een error niet geupgrade worden.")
+        }
+    })
+}
+
+function addUser() {
+    $.ajax({
+        url: "api/account",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "username": $("#username").val(),
+            "password": $("#password").val(),
+            "rolId": 2,
+            "Classname": $("#classname").val()
+        }),
+        success: function () {
+            $("#username").val("");
+            $("#password").val("");
+            $("#classname").val("");
+            getClass();
+        },
+        error: function () {
+            alert('User kon niet toegevoegd worden door een error');
+        }
+    })
 }
 
 function addItem() {
@@ -191,7 +234,7 @@ function showAntwoorden(id) {
     $(tBody).empty();
 
     $.each(vragen, function (key, item) {
-        if (item.Id === id) 
+        if (item.Id === id) {
             $.each(item.Antwoorden, function (key, antwoord) {
                 const tr = $("<tr></tr>")
                     .append($("<td></td>").text(antwoord.Id))

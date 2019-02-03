@@ -61,6 +61,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
+    <script src="scripts\jquery-cookie-master\src\jquery.cookie.js"></script>
     <script>
         function login() {
             console.log("Login attempt")
@@ -74,6 +75,8 @@
                 success: function (result) {
                     if (result != -1) {
                         console.log(result);
+                        $.cookie.json = true;
+                        $.cookie("user", result);
                         window.location.href = "/questionAdmin.html"
                     } else {
                         alert("Invalid details");
