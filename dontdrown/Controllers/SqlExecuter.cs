@@ -165,6 +165,53 @@ namespace dontdrown.Controllers
             return null;
         }
 
+        public static Account LoginAdmin(string username, string password)
+        {
+            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
+            SqlCommand cmd = new SqlCommand
+            {
+                CommandText = $"SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, a.klas FROM Accounts a, Rollen r WHERE a.rol_id = r.id AND r.id = 1 AND LOWER(a.username) = '{username.ToLower()}' AND a.password = '{password}'",
+                CommandType = System.Data.CommandType.Text,
+                Connection = connection
+            };
+
+            using (connection)
+            {
+                connection.Open();
+
+                try
+                {
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            return new Account()
+                            {
+                                Id = reader.GetInt32(0),
+                                Username = reader.GetString(1),
+                                RolId = reader.GetInt32(2),
+                                Rol = reader.GetString(3),
+                                SaveId = reader.GetInt32(4),
+                                Classname = reader.SafeGetString(5)
+                            };
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Failed login attempt");
+                    }
+                    reader.Close();
+                }
+                catch
+                {
+                    Debug.WriteLine("Login failed with an error");
+                }
+            }
+            return null;
+        }
+
         public static List<Account> GetAccounts(string classname)
         {
             var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString);
@@ -240,7 +287,7 @@ namespace dontdrown.Controllers
                         reader.Read();
                         JObject json = JObject.Parse(reader.GetString(0));
 
-                        returnValue = (bool)json["LevelUp"];
+                        returnValue = (bool)json["Request"];
                     }
                     else
                     {
@@ -383,13 +430,13 @@ namespace dontdrown.Controllers
          *  All UPDATE querries
          *  ===================
          */
-        public static bool UpdateLevelUp(long userid, bool canLevelUp)
+        public static bool UpdateLevelUp(long userid)
         {
             string conString = ConfigurationManager.ConnectionStrings["sqlserver"].ConnectionString;
             SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(data, '$.LevelUp', '{canLevelUp.ToString().ToLower()}') WHERE id = {userid};",
+                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(1 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = {userid};",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
@@ -405,7 +452,7 @@ namespace dontdrown.Controllers
         {
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', 'false'), '$.Level',JSON_VALUE(data, '$.Level') + 1) WHERE id = {userid};",
+                CommandText = $"UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(0 as BIT)), '$.Level',JSON_VALUE(data, '$.Level') + 1) WHERE id = {userid};",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };
@@ -423,7 +470,7 @@ namespace dontdrown.Controllers
             SqlConnection connection = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand
             {
-                CommandText = $"UPDATE Saves SET data = '{jsonData}' WHERE id = {userid} AND ISJSON('{jsonData}') > 0;",
+                CommandText = $"UPDATE Saves SET data = '{jsonData}' WHERE id = (SELECT a.save_id FROM Accounts a, Saves s WHERE s.id = a.save_id AND a.id = {userid}) AND ISJSON('{jsonData}') > 0;",
                 CommandType = System.Data.CommandType.Text,
                 Connection = connection
             };

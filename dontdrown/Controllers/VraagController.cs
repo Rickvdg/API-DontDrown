@@ -42,12 +42,16 @@ namespace dontdrown.Controllers
         //    return SqlExecuter.GetLevelUp(sqlCon, id);
         //}
 
-        //[HttpPost]
-        //public IActionResult Create(VraagItem item)
-        //{
-        //    bool succes = SqlExecuter.InsertQuestion(sqlCon, item);
-        //    return succes ? NoContent() : (IActionResult)NotFound();
-        //}
+        [HttpPost]
+        public IHttpActionResult Create(VraagItem item)
+        {
+            bool succes = SqlExecuter.InsertQuestion(item);
+            if (succes)
+            {
+                return Ok();
+            }
+            return NotFound();
+        }
 
         //[HttpPut("{id}")]
         //public IActionResult Update(long id, VraagItem item)
@@ -65,21 +69,21 @@ namespace dontdrown.Controllers
         //    return NoContent();
         //}
 
-        //[HttpDelete("{id}")]
-        //public IActionResult Delete(long id)
-        //{
-        //    try
-        //    {
-        //        if (SqlExecuter.DeleteQuestion(sqlCon, id))
-        //        {
-        //            return NoContent();
-        //        }
-        //        return NoContent();
-        //    }
-        //    catch
-        //    {
-        //        return NoContent();
-        //    }
-        //}
+        [HttpDelete]
+        public IHttpActionResult Delete(long id)
+        {
+            try
+            {
+                if (SqlExecuter.DeleteQuestion(id))
+                {
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
     }
 }

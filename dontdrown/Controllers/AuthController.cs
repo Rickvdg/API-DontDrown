@@ -35,6 +35,23 @@ namespace dontdrown.Controllers
             return NotFound();
         }
 
+        [Route("api/auth/loginadmin/{username}/{password}")]
+        public IHttpActionResult GetAdmin(string username, string password)
+        {
+            Account user = SqlExecuter.LoginAdmin(username, password);
+
+            if (user != null)
+            {
+                if (!StaticValues.userCookies.ContainsKey(username))
+                {
+                    int authCookie = new Random().Next(10000, 99999);
+                    StaticValues.userCookies.Add(username, authCookie);
+                }
+                return Ok(user);
+            }
+            return NotFound();
+        }
+
         // POST api/<controller>
         public void Post([FromBody]string value)
         {

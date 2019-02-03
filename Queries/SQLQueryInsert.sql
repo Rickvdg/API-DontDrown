@@ -29,6 +29,15 @@
 
 --SELECT data FROM Saves, Accounts WHERE username = 'rick' AND accounts.id = saves.id;
 
-SELECT data FROM Saves, Accounts WHERE Saves.id = Accounts.save_id AND Accounts.id = 1;
-
 --SELECT a.id, a.username, a.rol_id, r.naam, a.save_id, a.klas FROM Accounts a, Rollen r WHERE a.rol_id = r.id AND LOWER(a.username) = 'rick' AND a.password = '123'
+
+--UPDATE Saves SET data = '{ "Level": 1, "LevelUp": "true", "Request": "true" }' WHERE id = 1
+
+UPDATE Saves SET data = JSON_MODIFY(JSON_MODIFY(data, '$.LevelUp', CAST(0 as BIT)), '$.Request', CAST(0 as BIT)) WHERE id = 2;
+
+--UPDATE Saves 
+--SET data = '{ "Level": 5, "LevelUp": false, "Request": false }'
+--WHERE id = (SELECT a.save_id FROM Accounts a, Saves s WHERE s.id = a.save_id AND a.id = 3)
+--AND ISJSON('{ "Level": 5, "LevelUp": false, "Request": false }') > 0;
+
+SELECT a.id, data FROM saves s, Accounts a WHERE a.save_id = s.id ;

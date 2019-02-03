@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,20 +17,42 @@ namespace dontdrown.Controllers
         }
 
         // GET api/<controller>/5
+        [Route("api/save/{id}")]
+        [HttpGet]
         public string Get(int id)
         {
-            return SqlExecuter.GetSaveData(id);
+            var data = SqlExecuter.GetSaveData(id);
+            Debug.WriteLine(data);
+            return data;
         }
 
         [Route("api/save/username/{username}")]
         public string Get(string username)
         {
-            return SqlExecuter.GetSaveData(username);
+            var data = SqlExecuter.GetSaveData(username);
+            Debug.WriteLine(data);
+            return data;
         }
 
-        // POST api/<controller>
+        [Route("api/save/upgrade/{id}")]
+        public bool GetUpgradable(int id)
+        {
+            return SqlExecuter.GetLevelUp(id);
+        }
+
+        [Route("api/save/upgrade/{id}")]
+        [HttpPost]
+        public bool PostUpgradePlayer(int id)
+        {
+            return SqlExecuter.UpdateLevelUp(id);
+        }
+
+        // POST api/<controller>/{id}
+        [Route("api/save/{id}")]
+        [HttpPost]
         public IHttpActionResult Post(int id, [FromBody]string value)
         {
+            Debug.WriteLine(value);
             var executedQuery = SqlExecuter.UpdateSaveData(id, value);
             if (executedQuery)
             {

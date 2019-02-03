@@ -15,7 +15,7 @@ function getCount(data) {
 
 $(document).ready(function () {
     getData();
-    //getClass();
+    getClass();
 });
 
 function getData() {
@@ -67,43 +67,44 @@ function getData() {
         },
         error: function (er) {
             console.log(er);
+            alert("Er konden geen vragen opgehaald worden door een error");
         }
     });
 }
 
-//var loggedUser = { username: "Rick", klas: "H5P", rolId: 1 };
+var loggedUser = { username: "Rick", klas: "H5P", rolId: 1 };
 
-//function getClass() {
-//    $.ajax({
-//        type: "GET",
-//        url: "api/account",
-//        cache: false,
-//        success: function (data) {
-//            const tBody = $("#gebruikers");
-//            $(tBody).empty();
-//            //console.log(data);
+function getClass() {
+    $.ajax({
+        type: "GET",
+        url: "api/account",
+        cache: false,
+        success: function (data) {
+            const tBody = $("#gebruikers");
+            $(tBody).empty();
+            console.log(data);
 
-//            $.each(data, function (key, item) {
-//                var jsonData = {};
-//                if (item.saveJson) {
-//                    jsonData = JSON.parse(item.saveJson);
-//                }
-//                const tr = $("<tr></tr>")
-//                    .append($("<td></td>").text(item.id))
-//                    .append($("<td></td>").text(item.username))
-//                    .append($("<td></td>").text(item.rol))
+            $.each(data, function (key, item) {
+                var jsonData = {};
+                if (item.saveJson) {
+                    jsonData = JSON.parse(item.saveJson);
+                }
+                const tr = $("<tr></tr>")
+                    .append($("<td></td>").text(item.Id))
+                    .append($("<td></td>").text(item.Username))
+                    .append($("<td></td>").text(item.Rol))
 
-//                if (jsonData.LevelUp) {
-//                    tr.append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
-//                } else {
-//                    tr.append($("<td></td>"));
-//                }
+                if (jsonData.LevelUp) {
+                    tr.append($("<td></td>").html("<button class='btn btn-primary'>Level up</button>"));
+                } else {
+                    tr.append($("<td></td>"));
+                }
 
-//                tr.appendTo(tBody);
-//            });
-//        }
-//    });
-//}
+                tr.appendTo(tBody);
+            });
+        }
+    });
+}
 
 function addItem() {
     const item = {
@@ -149,7 +150,7 @@ function addItem() {
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Kon de vraag helaas niet toevoegen door een server error");
         },
-        success: function (result) {
+        success: function () {
             getData();
             $("#add-name").val("");
             $("#add-hint").val("");
@@ -190,12 +191,12 @@ function showAntwoorden(id) {
     $(tBody).empty();
 
     $.each(vragen, function (key, item) {
-        if (item.id === id) {
-            $.each(item.antwoorden, function (key, antwoord) {
+        if (item.Id === id) 
+            $.each(item.Antwoorden, function (key, antwoord) {
                 const tr = $("<tr></tr>")
-                    .append($("<td></td>").text(antwoord.id))
-                    .append($("<td></td>").text(antwoord.waarde))
-                    .append($("<td></td>").text(antwoord.correctness));
+                    .append($("<td></td>").text(antwoord.Id))
+                    .append($("<td></td>").text(antwoord.Waarde))
+                    .append($("<td></td>").text(antwoord.Correctness));
 
                 tr.appendTo(tBody);
             });
