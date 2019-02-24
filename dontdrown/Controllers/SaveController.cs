@@ -47,10 +47,10 @@ namespace dontdrown.Controllers
             return SqlExecuter.UpdateLevelUp(id);
         }
 
-        // POST api/<controller>/{id}
+        // PUT api/<controller>/{id}
         [Route("api/save/{id}")]
-        [HttpPost]
-        public IHttpActionResult Post(int id, [FromBody]string value)
+        [HttpPut]
+        public IHttpActionResult Put(int id, [FromBody]string value)
         {
             Debug.WriteLine(value);
             var executedQuery = SqlExecuter.UpdateSaveData(id, value);
@@ -58,17 +58,8 @@ namespace dontdrown.Controllers
             {
                 return Ok();
             }
-            return NotFound();
+            throw new Exception("Could not save the data");
         }
 
-        // PUT api/<controller>/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/<controller>/5
-        public void Delete(int id)
-        {
-        }
     }
 }
